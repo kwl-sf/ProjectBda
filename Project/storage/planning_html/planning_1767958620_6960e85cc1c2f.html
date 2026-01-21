@@ -1,0 +1,291 @@
+<!DOCTYPE html>
+<html lang="fr" dir="ltr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Planning des Examens - S1 - normale</title>
+    <style>
+        /* CSS complet identique à generate_schedule.php */
+        :root {
+            --primary: #4361ee;
+            --secondary: #7209b7;
+            --success: #2ecc71;
+            --warning: #f39c12;
+            --danger: #e74c3c;
+            --info: #3498db;
+            --gray-50: #f9fafb;
+            --gray-100: #f3f4f6;
+            --gray-200: #e5e7eb;
+            --gray-300: #d1d5db;
+            --gray-400: #9ca3af;
+            --gray-500: #6b7280;
+            --gray-600: #4b5563;
+            --gray-700: #374151;
+            --gray-800: #1f2937;
+            --gray-900: #111827;
+            --border-radius: 12px;
+            --border-radius-sm: 8px;
+            --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+            --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+            --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+            --transition: all 0.3s ease;
+        }
+        
+        body {
+            font-family: 'Poppins', sans-serif;
+            background: var(--gray-50);
+            color: var(--gray-800);
+            line-height: 1.6;
+            margin: 0;
+            padding: 20px;
+        }
+        
+        .planning-container {
+            max-width: 1400px;
+            margin: 0 auto;
+            background: white;
+            border-radius: var(--border-radius);
+            box-shadow: var(--shadow-lg);
+            overflow: hidden;
+        }
+        
+        .planning-header {
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            color: white;
+            padding: 2rem;
+            text-align: center;
+        }
+        
+        .planning-header h1 {
+            font-size: 2.5rem;
+            margin-bottom: 0.5rem;
+        }
+        
+        .planning-header .subtitle {
+            font-size: 1.2rem;
+            opacity: 0.9;
+        }
+        
+        .planning-info {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 1.5rem;
+            padding: 1.5rem;
+            background: var(--gray-100);
+            border-bottom: 2px solid var(--gray-200);
+        }
+        
+        .info-card {
+            background: white;
+            padding: 1rem;
+            border-radius: var(--border-radius-sm);
+            box-shadow: var(--shadow-sm);
+        }
+        
+        .info-card .label {
+            font-size: 0.9rem;
+            color: var(--gray-600);
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+        
+        .info-card .value {
+            font-size: 1.2rem;
+            font-weight: 700;
+            color: var(--gray-900);
+            margin-top: 0.5rem;
+        }
+        
+        .formation-section {
+            margin: 2rem;
+        }
+        
+        .formation-card {
+            background: white;
+            border-radius: var(--border-radius);
+            box-shadow: var(--shadow-md);
+            margin-bottom: 2rem;
+            overflow: hidden;
+        }
+        
+        .formation-title {
+            background: linear-gradient(135deg, #4cc9f0, #4361ee);
+            color: white;
+            padding: 1.5rem;
+            font-size: 1.5rem;
+            font-weight: 700;
+        }
+        
+        .modules-table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+        
+        .modules-table th {
+            background: var(--gray-100);
+            padding: 1rem;
+            text-align: left;
+            font-weight: 600;
+            color: var(--gray-700);
+            border-bottom: 2px solid var(--gray-300);
+        }
+        
+        .modules-table td {
+            padding: 1rem;
+            border-bottom: 1px solid var(--gray-200);
+            vertical-align: top;
+        }
+        
+        .examen-info {
+            display: flex;
+            flex-direction: column;
+            gap: 0.75rem;
+        }
+        
+        .module-header {
+            margin-bottom: 1rem;
+            padding-bottom: 1rem;
+            border-bottom: 2px solid var(--gray-200);
+        }
+        
+        .module-title {
+            font-size: 1.25rem;
+            font-weight: 700;
+            color: var(--gray-900);
+            margin-bottom: 0.5rem;
+        }
+        
+        .module-subtitle {
+            display: flex;
+            gap: 1rem;
+            align-items: center;
+            color: var(--gray-600);
+            font-size: 0.95rem;
+        }
+        
+        .salle-item {
+            background: rgba(67, 97, 238, 0.05);
+            border-left: 4px solid var(--primary);
+            padding: 0.75rem;
+            border-radius: var(--border-radius-sm);
+            margin-bottom: 0.5rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .salle-info {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+        }
+        
+        .salle-icon {
+            font-size: 1.25rem;
+        }
+        
+        .salle-type-badge {
+            padding: 0.25rem 0.5rem;
+            border-radius: 4px;
+            font-size: 0.85rem;
+            font-weight: 600;
+        }
+        
+        .salle-type-badge.amphi {
+            background: rgba(155, 89, 182, 0.1);
+            color: #9b59b6;
+        }
+        
+        .salle-type-badge.salle {
+            background: rgba(46, 204, 113, 0.1);
+            color: var(--success);
+        }
+        
+        .groupes-info {
+            background: rgba(46, 204, 113, 0.1);
+            border-radius: 4px;
+            padding: 0.5rem 0.75rem;
+            font-size: 0.9rem;
+            font-weight: 600;
+            color: var(--success);
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+        
+        .footer-note {
+            text-align: center;
+            padding: 2rem;
+            color: var(--gray-600);
+            font-size: 0.9rem;
+            border-top: 1px solid var(--gray-200);
+            background: var(--gray-50);
+        }
+        
+        @media print {
+            body {
+                background: white;
+            }
+            
+            .planning-container {
+                box-shadow: none;
+            }
+            
+            .planning-header {
+                background: linear-gradient(135deg, var(--primary), var(--secondary)) !important;
+                -webkit-print-color-adjust: exact;
+                print-color-adjust: exact;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="planning-container">
+        <!-- En-tête -->
+        <div class="planning-header">
+            <h1><i class="fas fa-graduation-cap"></i> Planning des Examens</h1>
+            <div class="subtitle">Version finale - Pour validation</div>
+        </div>
+        
+        <!-- Informations générales -->
+        <div class="planning-info">
+            <div class="info-card">
+                <div class="label">Semestre</div>
+                <div class="value">S1</div>
+            </div>
+            
+            <div class="info-card">
+                <div class="label">Session</div>
+                <div class="value">Session Normale</div>
+            </div>
+            
+            <div class="info-card">
+                <div class="label">Période</div>
+                <div class="value">10/01/2026 - 30/01/2026</div>
+            </div>
+            
+            <div class="info-card">
+                <div class="label">Généré par</div>
+                <div class="value">Djamel BELKASMI</div>
+            </div>
+            
+            <div class="info-card">
+                <div class="label">Date de génération</div>
+                <div class="value">09/01/2026 12:37</div>
+            </div>
+        </div>
+        
+        <!-- Formations et examens -->
+        <div class="formation-section">
+            <p style="text-align: center; padding: 2rem; color: var(--gray-500);">Aucune formation sélectionnée</p>        </div>
+        
+        <!-- Note de bas de page -->
+        <div class="footer-note">
+            <p>Document généré automatiquement par le système PlanExam Pro</p>
+            <p>© 2026 - Université - Tous droits réservés</p>
+            <p>Ce planning est en attente de validation par le chef de département</p>
+        </div>
+    </div>
+</body>
+</html>
+    
